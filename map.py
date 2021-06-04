@@ -1,7 +1,8 @@
 import numpy as np
 import random
+from PIL import Image
 
-def map_generator(m:int=9, n:int=5):
+def map_generator(m:int=9, n:int=5,block_size:int=4):
 
     if m<5 or n<3:
         print("błędne wartości przyjmuję m=9, n=5")
@@ -26,7 +27,7 @@ def map_generator(m:int=9, n:int=5):
                                 map[h[0]+k[0]][h[1]+k[1]]=kolejny
                                 g.append([h[0]+k[0],h[1]+k[1]])
                                 ile+=1
-                                if ile == 4:
+                                if ile == block_size:
                                     break
                     else:
                         continue
@@ -68,8 +69,80 @@ def map_generator(m:int=9, n:int=5):
     #plt.show()
 
 
+def map_background_generation(m:int=9, n:int=5,block_size:int=4):
+
+    thickness=6
+    line_width=2
+    maps=map_generator(m,n,block_size)
 
 
+    im= Image.new("RGB", (len(maps)*16, len(maps[0])*16), "#000000")
+
+    for i in range(1,len(maps[0])-1):
+        for j in range(1,len(maps)-1):
+            if maps[j][i]==1:
+                if maps[j+1][i] == 1 and maps[j+1][i+1] == 0 and maps[j][i+1] == 0:
+                    im.paste((0,0,190)  ,((j+1)*16-8    ,(i+1)*16+thickness-1 ,(j+1)*16+8      ,(i+1)*16+thickness+line_width-1))
+                if maps[j+1][i] == 1 and maps[j+1][i-1] == 0 and maps[j][i-1] == 0:
+                    im.paste((0,0,190)  ,((j+1)*16-8    ,i*16-thickness-1 ,(j+1)*16+8      ,i*16-thickness+line_width-1))
+                if maps[j][i+1] == 1 and maps[j+1][i+1] == 0 and maps[j+1][i] == 0:
+                    im.paste((0,0,190)  ,((j+1)*16+thickness-1    ,(i+1)*16-8 , (j+1)*16+thickness+line_width-1      ,(i+1)*16+8))
+                if maps[j][i+1] == 1 and maps[j-1][i+1] == 0 and maps[j-1][i] == 0:
+                    im.paste((0,0,190)  ,(j*16-thickness-1    ,(i+1)*16-8 ,j*16-thickness+line_width-1      ,(i+1)*16+8))
+
+    for i in range(len(maps[0])-1):
+        for j in range(len(maps)-1):
+            shape=[[maps[j][i],maps[j][i+1]],[maps[j+1][i],maps[j+1][i+1]]]
+            if shape==[[1,1],[1,0]]:
+                im.paste((0,0,190)  , ( (j+1)*16+thickness, (i+1)*16+thickness, (j+1)*16+thickness+3, (i+1)*16+thickness+3))
+                im.paste((0,0,0)  , ( (j+1)*16+thickness+2, (i+1)*16+thickness+2, (j+1)*16+thickness+3, (i+1)*16+thickness+3))
+                im.paste((0,0,0)  , ( (j+1)*16+thickness, (i+1)*16+thickness, (j+1)*16+thickness+1, (i+1)*16+thickness+1))
+            if shape==[[1,1],[0,1]]:
+                im.paste((0,0,190)  , ( (j+1)*16+thickness, i*16+thickness+1, (j+1)*16+thickness+3, i*16+thickness+4))
+                im.paste((0,0,0)  , ( (j+1)*16+thickness+2, i*16+thickness+1, (j+1)*16+thickness+3, i*16+thickness+2))
+                im.paste((0,0,0)  , ( (j+1)*16+thickness, i*16+thickness+3, (j+1)*16+thickness+1, i*16+thickness+4))
+            if shape==[[0,1],[1,1]]:
+                im.paste((0,0,190)  , ( j*16+thickness+1, i*16+thickness+1, j*16+thickness+4, i*16+thickness+4))
+                im.paste((0,0,0)  , ( j*16+thickness+3, i*16+thickness+3, j*16+thickness+4, i*16+thickness+4))
+                im.paste((0,0,0)  , ( j*16+thickness+1, i*16+thickness+1, j*16+thickness+2, i*16+thickness+2))
+            if shape==[[1,0],[1,1]]:
+                im.paste((0,0,190)  , ( j*16+thickness+1, (i+1)*16+thickness, j*16+thickness+4, (i+1)*16+thickness+3))
+                im.paste((0,0,0)  , ( j*16+thickness+1, (i+1)*16+thickness+2, j*16+thickness+2, (i+1)*16+thickness+3))
+                im.paste((0,0,0)  , ( j*16+thickness+3, (i+1)*16+thickness, j*16+thickness+4, (i+1)*16+thickness+1))
+
+            if shape==[[0,0],[0,1]]: 
+                im.paste((0,0,190)  , ( j*16+thickness+3, i*16+thickness*2, j*16+thickness+5, (i+1)*16+thickness+4))
+                im.paste((0,0,190)  , ( j*16+thickness*2, i*16+thickness+3, (j+1)*16+thickness+3, i*16+thickness*2-1))
+                im.paste((0,0,190)  , ( j*16+thickness*2-2, i*16+thickness*2-2, j*16+thickness*2+1, i*16+thickness*2+1))
+                im.paste((0,0,0)  , ( j*16+thickness*2-2, i*16+thickness*2-2, j*16+thickness*2-1, i*16+thickness*2-1))
+                im.paste((0,0,0)  , ( j*16+thickness*2, i*16+thickness*2, j*16+thickness*2+1, i*16+thickness*2+1))
+            if shape==[[0,0],[1,0]]: 
+                im.paste((0,0,190)  , ( j*16+thickness+3, i*16+thickness, j*16+thickness+5, (i+1)*16+thickness-2))
+                im.paste((0,0,190)  , ( (j+1)*16-thickness+2, (i+1)*16+thickness-1, (j+1)*16+thickness+3, (i+1)*16+thickness+1))
+                im.paste((0,0,190)  , ( j*16+thickness+4, (i+1)*16+thickness-3, j*16+thickness+7, (i+1)*16+thickness))
+                im.paste((0,0,0)  , ( j*16+thickness+6, (i+1)*16+thickness-3, j*16+thickness+7, (i+1)*16+thickness-2,))
+                im.paste((0,0,0)  , ( j*16+thickness+4, (i+1)*16+thickness-1, j*16+thickness+5, (i+1)*16+thickness))
+            if shape==[[1,0],[0,0]]: 
+                im.paste((0,0,190)  , ( (j+1)*16+thickness-1, i*16+thickness, (j+1)*16+thickness+1, (i+1)*16+thickness-2))
+                im.paste((0,0,190)  , ( j*16+thickness*2-4, (i+1)*16+thickness-1, (j+1)*16+thickness-2, (i+1)*16+thickness+1))
+                im.paste((0,0,190)  , ( (j+1)*16+thickness-3, (i+1)*16+thickness-3, (j+1)*16+thickness, (i+1)*16+thickness))
+                im.paste((0,0,0)    , ( (j+1)*16+thickness-3, (i+1)*16+thickness-3, (j+1)*16+thickness-2, (i+1)*16+thickness-2))
+                im.paste((0,0,0)    , ( (j+1)*16+thickness-1, (i+1)*16+thickness-1, (j+1)*16+thickness, (i+1)*16+thickness))
+            if shape==[[0,1],[0,0]]: 
+                im.paste((0,0,190)  , ( (j+1)*16-thickness-2, (i+1)*16-thickness-1, (j+1)*16+thickness-2, (i+1)*16-thickness+1))
+                im.paste((0,0,190)  , ( (j+1)*16+thickness-1, (i+1)*16-thickness+2, (j+1)*16+thickness+1, (i+1)*16+thickness+2))
+                im.paste((0,0,190)  , ( (j+1)*16+thickness-3, (i+1)*16-thickness, (j+1)*16+thickness, (i+1)*16-thickness+3))
+                im.paste((0,0,0)    , ( (j+1)*16+thickness-3, (i+1)*16-thickness+2, (j+1)*16+thickness-2, (i+1)*16-thickness+3))
+                im.paste((0,0,0)    , ( (j+1)*16+thickness-1,  (i+1)*16-thickness, (j+1)*16+thickness,  (i+1)*16-thickness+1))
 
 
+    j=m//3*3+2
+    i=n*3
+    im.paste((150,150,150)  , ( j*16+thickness-2, (i-1)*16, j*16+thickness+2, (i+1)*16))
 
+    im = im.transpose(Image.ROTATE_270)
+    im.show()
+
+    return im
+
+    
