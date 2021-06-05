@@ -141,7 +141,7 @@ def map_background_generation(m:int=9, n:int=5,block_size:int=4):
     im.paste((150,150,150)  , ( j*16+thickness-2, (i-1)*16, j*16+thickness+2, (i+1)*16))
 
     im = im.transpose(Image.ROTATE_270)
-    im.show()
+    #im.show()
 
     return im
 
