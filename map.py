@@ -143,6 +143,6 @@ def map_background_generation(m:int=9, n:int=5,block_size:int=4):
     im = im.transpose(Image.ROTATE_270)
     #im.show()
 
-    return im
+    return [im,maps]
 
     

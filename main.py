@@ -3,7 +3,7 @@ import arcade
 import os
 
 # Własne
-import map
+#import map
 import Pacman
 import main_menu
 
@@ -29,7 +29,7 @@ class MyGame(arcade.Window):
         #self.background = arcade.load_texture(arcade.Texture("vso",map.map_background_generation()))
         #print(map.map_background_generation())
 
-        self.background=arcade.Texture("whatever",map.map_background_generation(50,25))
+        #self.background=arcade.Texture("whatever",map.map_background_generation(50,25))
 
 
 
