@@ -5,11 +5,12 @@ import arcade
 class Pac_man:
     """ Main application class. """
 
-    def __init__(self,map, up,right,down,left, pac_pos,pac_size, pos ,pos_on_map, scale):
+    def __init__(self,map, up,right,down,left, pac_pos,pac_size, pos ,pos_on_map, scale,speed,lives):
         self.right_key=right
         self.left_key=left
         self.down_key=down
         self.up_key=up
+        self.lives=lives
         
         self.pos=pos
 
@@ -21,7 +22,7 @@ class Pac_man:
         self.direction=5
         self.direction_buff=1
 
-        self.mouth_tick=0
+        self.mouth_tick=30
 
         self.pac_pos=pac_pos
         self.pac_size=pac_size
@@ -30,20 +31,18 @@ class Pac_man:
         self.game_running=False
         self.pause=True
 
-        self.pac_speed=5
+        self.pac_speed=speed
 
         self.pos_on_map=pos_on_map
 
 
-        self.test=0
         self.up=True
 
-        self.rotation=0
-        self.x_pos=400  
-        self.y_pos=300
+
     
 
     def Draw(self):
+        print(self.pos_on_map)
         pos=self.pos([self.pos_on_map[0]+self.down,self.pos_on_map[1]+self.right])
         arcade.draw_arc_filled(pos[0]-2, pos[1]-2,
         self.pac_size,self.pac_size,arcade.color.YELLOW,0,360-2*self.mouth_tick,self.mouth_tick+90*self.direction)
@@ -85,22 +84,22 @@ class Pac_man:
 
 
         
-        if self.direction_buff==0  and -0.1<=self.down<=0.1:
+        if self.direction_buff==0  and -self.pac_speed/50<=self.down<=self.pac_speed/50:
             if self.map[self.pos_on_map[0]][self.pos_on_map[1]+1] != 0:
                 self.direction=self.direction_buff
                 self.down=0
 
-        elif self.direction_buff==1 and -0.1<=self.right<=0.1:
+        elif self.direction_buff==1 and -self.pac_speed/50<=self.right<=self.pac_speed/50:
             if self.map[self.pos_on_map[0]-1][self.pos_on_map[1]] != 0:
                 self.direction=self.direction_buff
                 self.right=0
 
-        elif self.direction_buff==2 and -0.1<=self.down<=0.1:
+        elif self.direction_buff==2 and -self.pac_speed/50<=self.down<=self.pac_speed/50:
             if self.map[self.pos_on_map[0]][self.pos_on_map[1]-1] != 0:
                 self.direction=self.direction_buff
                 self.down=0
 
-        elif self.direction_buff==3 and -0.1<=self.right<=0.1:
+        elif self.direction_buff==3 and -self.pac_speed/50<=self.right<=self.pac_speed/50:
             if self.map[self.pos_on_map[0]+1][self.pos_on_map[1]] != 0:
                 self.direction=self.direction_buff
                 self.right=0
@@ -120,8 +119,6 @@ class Pac_man:
         self.pos_on_map[0]+=int((self.down+1/2)//1)
         self.down=(self.down+1/2)%1-1/2
 
-
-        
 
 
     def Key_press(self, key):

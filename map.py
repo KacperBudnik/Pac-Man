@@ -4,7 +4,7 @@ from PIL import Image
 
 def map_generator(m:int=9, n:int=5,block_size:int=4):
 
-    if m<5 or n<3:
+    if m<2 or n<2:
         print("błędne wartości przyjmuję m=9, n=5")
         m=9
         n=5
