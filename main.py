@@ -1,6 +1,7 @@
 import random
 import arcade
 import os
+from PIL import Image
 
 # Własne
 #import map
@@ -22,16 +23,8 @@ class MyGame(arcade.Window):
 
         self.menu = main_menu.Menu(width, height)
 
-        self.pacman=Pacman.Pac_man()
+
     
-
-
-        #self.background = arcade.load_texture(arcade.Texture("vso",map.map_background_generation()))
-        #print(map.map_background_generation())
-
-        #self.background=arcade.Texture("whatever",map.map_background_generation(50,25))
-
-
 
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -47,47 +40,90 @@ class MyGame(arcade.Window):
     def on_draw(self):
         arcade.start_render()
 
-
         if not self.game_running:
             self.menu.Draw()
         else:
-            arcade.draw_lrwh_rectangle_textured(self.camera_pos[0], self.camera_pos[1], self.SCREEN_WIDTH, self.SCREEN_HEIGHT,self.background)
+            self.draw_background()
+            self.draw_points()
             self.pacman.Draw()
 
-        
+
+    def draw_points(self):
+        pass#for i in range(1,)
+
+    def draw_background(self):
+        self.background.draw_scaled(self.SCREEN_WIDTH*0.4,self.SCREEN_HEIGHT*0.4,self.scale,0)
+        arcade.draw_rectangle_filled(self.SCREEN_WIDTH*0.5,self.SCREEN_HEIGHT*0.9,self.SCREEN_WIDTH,self.SCREEN_HEIGHT*0.2,(0,0,30))
+        arcade.draw_rectangle_filled(self.SCREEN_WIDTH*0.9,self.SCREEN_HEIGHT*0.5,self.SCREEN_WIDTH*0.2,self.SCREEN_HEIGHT,(0,0,30))
+        arcade.draw_text(
+            "Pac Man",
+            start_x=self.SCREEN_WIDTH/2,
+            start_y=self.SCREEN_HEIGHT/11*10,
+            color=arcade.csscolor.YELLOW,
+            font_size=48*self.SCREEN_HEIGHT/600,
+            font_name=self.pacfont,
+            align="center",
+            anchor_x="center",
+            anchor_y="center"
+        )
+        arcade.draw_text(
+            "Points",
+            start_x=self.SCREEN_WIDTH*0.9,
+            start_y=self.SCREEN_HEIGHT*0.7,
+            color=arcade.csscolor.WHEAT,
+            font_size=24*self.SCREEN_HEIGHT/600,
+            font_name=self.arcade_classic_font,
+            align="center",
+            anchor_x="center",
+            anchor_y="center"
+        )
+
     def on_update(self, delta_time):
         if self.game_running:
             self.pacman.Update(delta_time)
-
-
-            if not self.pause:
-                if self.rotation == 0:
-                    self.camera_pos[0]-=60*delta_time
-                elif self.rotation == 90:
-                    self.camera_pos[1]-=60*delta_time
-                elif self.rotation == 180:
-                    self.camera_pos[0]+=60*delta_time
-                else:
-                    self.camera_pos[1]+=60*delta_time
         else:
-            self.menu.on_update(delta_time)
+            self.menu.on_update(2*4*delta_time)
+            if self.menu.running:
+                self.start_game()
+                self.game_running=True
 
     def on_key_press(self, key, cos):
         if self.game_running:
-            if not self.pause:
+            if True:#not self.pause:
                 self.pacman.Key_press(key)
         else:
             self.menu.key_press(key)
-            if self.menu.running:
-                self.start_game()
+            
 
-        if key==arcade.key.ESCAPE:
-            self.game_running = not self.game_running
-        if key==arcade.key.SPACE:
-            self.pause = not self.pause
 
     def start_game(self):
         print("Let's the game begin!")
+        self.background=self.menu.background
+        self.scale=self.menu.scale
+        self.map_im=self.menu.map_im
+        self.im_width, self.im_height = self.map_im.size
+        self.map=self.menu.map
+        self.SCREEN_WIDTH=self.menu.SCREEN_WIDTH
+        self.SCREEN_HEIGHT=self.menu.SCREEN_HEIGHT
+        self.pac_size=self.menu.pac_size
+        self.pac_pos=[self.SCREEN_WIDTH*0.4,self.SCREEN_WIDTH*0.3+self.im_height/2*self.scale-self.im_height*self.menu.start_pos/len(self.map)*self.scale+self.pac_size/2]
+        self.pacman=Pacman.Pac_man(self.map,
+            self.menu.up_key,self.menu.right_key,self.menu.down_key,self.menu.left_key,
+            self.pac_pos,self.pac_size,
+            self.pos,
+            [self.menu.start_pos-1,len(self.map[0])//2],
+            self.scale)
+
+        self.pacfont=self.menu.pacfont
+        self.arcade_classic_font=self.menu.arcade_classic_font
+
+        self.map_size=(len(self.map[0]),len(self.map))
+
+    def pos(self,pos_on_map):
+        
+        a=self.SCREEN_WIDTH*0.3+self.im_height/2*self.scale-self.im_height*(pos_on_map[0]+1)/self.map_size[1]*self.scale+self.pac_size/2
+        b=self.SCREEN_WIDTH*0.4+self.im_width/2*self.scale-self.im_width*(self.map_size[0]-pos_on_map[1])/self.map_size[0]*self.scale+self.pac_size/2
+        return [b,a]
 
 
 def main():

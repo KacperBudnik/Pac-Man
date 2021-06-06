@@ -5,15 +5,34 @@ import arcade
 class Pac_man:
     """ Main application class. """
 
-    def __init__(self):
-        self.right_key=arcade.key.RIGHT
-        self.left_key=arcade.key.LEFT
-        self.down_key=arcade.key.DOWN
-        self.up_key=arcade.key.UP
+    def __init__(self,map, up,right,down,left, pac_pos,pac_size, pos ,pos_on_map, scale):
+        self.right_key=right
+        self.left_key=left
+        self.down_key=down
+        self.up_key=up
+        
+        self.pos=pos
+
+        self.map=map
+
+        self.down=0
+        self.right=-1/2
+
+        self.direction=5
+        self.direction_buff=1
+
+        self.mouth_tick=0
+
+        self.pac_pos=pac_pos
+        self.pac_size=pac_size
+        self.scale=scale
 
         self.game_running=False
         self.pause=True
 
+        self.pac_speed=5
+
+        self.pos_on_map=pos_on_map
 
 
         self.test=0
@@ -25,37 +44,92 @@ class Pac_man:
     
 
     def Draw(self):
-        arcade.draw_arc_filled(self.x_pos,self.y_pos,50,50,arcade.color.YELLOW,0,360-self.test*2,self.rotation+self.test)
-
+        pos=self.pos([self.pos_on_map[0]+self.down,self.pos_on_map[1]+self.right])
+        arcade.draw_arc_filled(pos[0]-2, pos[1]-2,
+        self.pac_size,self.pac_size,arcade.color.YELLOW,0,360-2*self.mouth_tick,self.mouth_tick+90*self.direction)
         
     def Update(self, delta_time):
         if self.up:
-            self.test+=60*delta_time
-            if self.test>30:
+            self.mouth_tick+=60*delta_time
+            if self.mouth_tick>30:
                 self.up=False
         else:
-            self.test-=60*delta_time
-            if self.test<=0:
+            self.mouth_tick-=60*delta_time
+            if self.mouth_tick<=0:
                 self.up=True
 
-        if self.rotation==0:
-            self.x_pos+=60*delta_time
-        elif self.rotation==90:
-            self.y_pos+=60*delta_time
-        elif self.rotation==180:
-            self.x_pos-=60*delta_time
-        elif self.rotation == 270:
-            self.y_pos-=60*delta_time
+
+
+
+        if self.direction==0:
+            if self.map[self.pos_on_map[0]][self.pos_on_map[1]+1] == 0:
+                if self.right>0:
+                    self.direction+=4
+
+        elif self.direction==1:
+            if self.map[self.pos_on_map[0]-1][self.pos_on_map[1]] == 0:
+                if self.down<=0:
+                    self.direction+=4
+
+        elif self.direction==2:
+            if self.map[self.pos_on_map[0]][self.pos_on_map[1]-1] == 0:
+                if self.right<=0:
+                    self.direction+=4
+
+        elif self.direction==3:
+            if self.map[self.pos_on_map[0]+1][self.pos_on_map[1]] == 0:
+                if self.down>=0:
+                    self.direction+=4
+
+
+
+
+        
+        if self.direction_buff==0  and -0.1<=self.down<=0.1:
+            if self.map[self.pos_on_map[0]][self.pos_on_map[1]+1] != 0:
+                self.direction=self.direction_buff
+                self.down=0
+
+        elif self.direction_buff==1 and -0.1<=self.right<=0.1:
+            if self.map[self.pos_on_map[0]-1][self.pos_on_map[1]] != 0:
+                self.direction=self.direction_buff
+                self.right=0
+
+        elif self.direction_buff==2 and -0.1<=self.down<=0.1:
+            if self.map[self.pos_on_map[0]][self.pos_on_map[1]-1] != 0:
+                self.direction=self.direction_buff
+                self.down=0
+
+        elif self.direction_buff==3 and -0.1<=self.right<=0.1:
+            if self.map[self.pos_on_map[0]+1][self.pos_on_map[1]] != 0:
+                self.direction=self.direction_buff
+                self.right=0
+
+        if self.direction == 0:
+            self.right+=self.pac_speed*delta_time
+        elif self.direction == 1:
+            self.down-=self.pac_speed*delta_time
+        elif self.direction == 2:
+            self.right-=self.pac_speed*delta_time
+        elif self.direction == 3:
+            self.down+=self.pac_speed*delta_time
+
+
+        self.pos_on_map[1]+=int((self.right+1/2)//1)
+        self.right=(self.right+1/2)%1-1/2
+        self.pos_on_map[0]+=int((self.down+1/2)//1)
+        self.down=(self.down+1/2)%1-1/2
+
 
         
 
 
     def Key_press(self, key):
         if key == self.right_key:
-            self.rotation=0
+            self.direction_buff=0
         elif key == self.left_key:
-            self.rotation=180
+            self.direction_buff=2
         elif key == self.up_key:
-            self.rotation=90
+            self.direction_buff=1
         elif key == self.down_key:
-            self.rotation=270
+            self.direction_buff=3

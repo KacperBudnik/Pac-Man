@@ -13,6 +13,11 @@ class Menu:
 
         self.game_prep_tick=0
 
+        self.right_key=arcade.key.RIGHT
+        self.left_key=arcade.key.LEFT
+        self.down_key=arcade.key.DOWN
+        self.up_key=arcade.key.UP
+
         self.running=False
         self.pacfont="fonts/PAC-FONT"
         self.arcade_classic_font="fonts/ArcadeClassic"
@@ -259,6 +264,7 @@ class Menu:
                 elif self.choose == "Play":
                     self.play = True
                     self.options = self.play_options
+                    self.path.append("self.play")
 
                 elif self.choose == "Settings":
                     self.settings = True
@@ -352,100 +358,7 @@ class Menu:
                 self.start_pos=i+1
                 break
         self.pac_size=20*self.scale
-        import matplotlib.pyplot as plt
+"""        import matplotlib.pyplot as plt
         self.map[i][n]=3
         plt.imshow(self.map,cmap='hot')
-        plt.show()
-
-
-
-
-
-""" Main
-            if self.game_prep_tick<2:
-                arcade.draw_arc_filled(self.SCREEN_WIDTH/4*3,self.SCREEN_HEIGHT/11*7,40,40,arcade.color.YELLOW,0,300,30)
-                arcade.draw_arc_filled(self.SCREEN_WIDTH/4,self.SCREEN_HEIGHT/11*7,40,40,arcade.color.YELLOW,0,300,30)
-                arcade.draw_text(
-                    "Pac Man",
-                    start_x=self.SCREEN_WIDTH/2,
-                    start_y=self.SCREEN_HEIGHT/11*(9+self.game_prep_tick/2),
-                    color=arcade.csscolor.YELLOW,
-                    font_size=48*self.SCREEN_HEIGHT/600,
-                    font_name=self.pacfont,
-                    align="center",
-                    anchor_x="center",
-                    anchor_y="center"
-                )
-            elif self.game_prep_tick<=4:
-                arcade.draw_text(
-                    "Pac Man",
-                    start_x=self.SCREEN_WIDTH/2,
-                    start_y=self.SCREEN_HEIGHT/11*10,
-                    color=arcade.csscolor.YELLOW,
-                    font_size=48*self.SCREEN_HEIGHT/600,
-                    font_name=self.pacfont,
-                    align="center",
-                    anchor_x="center",
-                    anchor_y="center"
-                )
-                arcade.draw_arc_filled(self.SCREEN_WIDTH/4*(3-self.game_prep_tick+2),self.SCREEN_HEIGHT/11*7,40,40,arcade.color.YELLOW,0,300,30)
-                arcade.draw_arc_filled(self.SCREEN_WIDTH/4,self.SCREEN_HEIGHT/11*7,40,40,arcade.color.YELLOW,0,300,30)
-            elif self.game_prep_tick<=6:
-                arcade.draw_text(
-                    "Pac Man",
-                    start_x=self.SCREEN_WIDTH/2,
-                    start_y=self.SCREEN_HEIGHT/11*10,
-                    color=arcade.csscolor.YELLOW,
-                    font_size=48*self.SCREEN_HEIGHT/600,
-                    font_name=self.pacfont,
-                    align="center",
-                    anchor_x="center",
-                    anchor_y="center"
-                )
-                arcade.draw_arc_filled(self.SCREEN_WIDTH/4,self.SCREEN_HEIGHT/11*7,40,40,arcade.color.YELLOW,0,300,30)
-            elif self.game_prep_tick<=9:
-                self.background.draw_scaled(self.SCREEN_WIDTH*0.4,self.SCREEN_HEIGHT*0.4,self.scale,0,255*(self.game_prep_tick-6)/3)
-
-
-"""
-
-
-
-
-
-
-
-
-
-
-
-
-
-################################################################
-
-
-""" Main
-                #self.background.draw_scaled(self.SCREEN_WIDTH*0.4,self.SCREEN_HEIGHT*0.4,self.scale,0,255)
-                arcade.draw_arc_filled(self.SCREEN_WIDTH*0.4+(self.SCREEN_WIDTH/4*3-self.SCREEN_WIDTH*0.4)*(5-self.game_prep_tick)/3,
-                    (1-self.start_pos/len(self.map))*0.8*self.SCREEN_HEIGHT*self.scale+(self.SCREEN_HEIGHT/11*7-(1-self.start_pos/len(self.map))*0.8*self.SCREEN_HEIGHT*self.scale)*(5-self.game_prep_tick)/3,
-                    self.pac_size+24*(5-self.game_prep_tick)/3,self.pac_size+24*(5-self.game_prep_tick)/3,
-                    arcade.color.YELLOW,0,300,
-                    30+90*(self.game_prep_tick-2)/3)
-                arcade.draw_arc_filled(self.SCREEN_WIDTH*0.4+(self.SCREEN_WIDTH/4*1-self.SCREEN_WIDTH*0.4)*(5-self.game_prep_tick)/3,
-                    (1-self.start_pos/len(self.map))*0.8*self.SCREEN_HEIGHT*self.scale+(self.SCREEN_HEIGHT/11*7-(1-self.start_pos/len(self.map))*0.8*self.SCREEN_HEIGHT*self.scale)*(5-self.game_prep_tick)/3,
-                    self.pac_size+24*(5-self.game_prep_tick)/3,self.pac_size+24*(5-self.game_prep_tick)/3,
-                    arcade.color.YELLOW,0,300,
-                    30+90*(self.game_prep_tick-2)/3)
-            elif self.game_prep_tick<=8:
-                self.background.draw_scaled(self.SCREEN_WIDTH*0.4,self.SCREEN_HEIGHT*0.4,self.scale,0,255*(self.game_prep_tick-5)/3)
-                arcade.draw_arc_filled(self.SCREEN_WIDTH*0.4,
-                    (1-self.start_pos/len(self.map))*0.8*self.SCREEN_HEIGHT*self.scale,
-                    self.pac_size,self.pac_size,
-                    arcade.color.YELLOW,0,300,
-                    120)
-            else:
-                self.background.draw_scaled(self.SCREEN_WIDTH*0.4,self.SCREEN_HEIGHT*0.4,self.scale,0)
-                arcade.draw_arc_filled(self.SCREEN_WIDTH*0.4,
-                    (1-self.start_pos/len(self.map))*0.8*self.SCREEN_HEIGHT*self.scale,
-                    self.pac_size,self.pac_size,arcade.color.YELLOW,0,300,120)
-"""
+        plt.show()"""
