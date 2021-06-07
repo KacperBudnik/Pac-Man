@@ -42,7 +42,6 @@ class Pac_man:
     
 
     def Draw(self):
-        print(self.pos_on_map)
         pos=self.pos([self.pos_on_map[0]+self.down,self.pos_on_map[1]+self.right])
         arcade.draw_arc_filled(pos[0]-2, pos[1]-2,
         self.pac_size,self.pac_size,arcade.color.YELLOW,0,360-2*self.mouth_tick,self.mouth_tick+90*self.direction)

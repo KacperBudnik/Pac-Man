@@ -30,10 +30,12 @@ class Menu:
         self.switch_buffor=""
         self.lets_the_game_begin=False
 
+        self.fear_time=5
         self.ghost_number=4
         self.ghost_speed=4
         self.pacman_speed=5
         self.pacman_lives=3
+        self.time_to_release=5
 
         self.player = 1
 
@@ -44,7 +46,7 @@ class Menu:
         self.settings_options = ["Keyboard", "Sound", "Back"]
         #self.play_options=["Play", "1 player", "Map", "Game settings","Back"]
         self.play_options=["Play", "Map","Game settings","Back"]
-        self.game_settings=["Ghosts number   4","Ghost Speed   4","PacMan Speed   5", "PacMan Lives   3", "Back"]
+        self.game_settings=["Ghosts number   4","Ghost Speed   4","PacMan Speed   5", "PacMan Lives   3","Fear Time   5", "Back"]
         self.map_options=["Map width   9","Map height   9","Back"]
         self.keyboard_settings=["UP"+str(self.up_key),"DOWN","RIGHT","LEFT","Back"]
         self.options=self.menu_options
@@ -315,7 +317,6 @@ class Menu:
 
                 elif self.choose == "Scoreboard":
                     self.options=self.rank
-                    print(self.rank)
                     self.choose_number=len(self.options)-1
                     self.choose=self.options[self.choose_number]
                     self.path.append("self.rank")
@@ -327,7 +328,6 @@ class Menu:
                     self.path.append("self.keyboard_settings")
 
                 elif self.choose == "Game settings":
-                    print(1)
                     self.options=self.game_settings
                     self.choose_number=len(self.options)-1
                     self.choose=self.options[self.choose_number]
@@ -387,6 +387,11 @@ class Menu:
                     if self.pacman_lives>10:
                         self.pacman_lives=10
                     self.game_settings[3]="PacMan Lives   "+str(self.pacman_lives)
+                elif self.choose[:9]=="Fear Time":
+                    self.fear_time+=1
+                    if self.fear_time>15:
+                        self.fear_time=15
+                    self.game_settings[4]="Fear Time   "+str(self.fear_time)
 
             elif key == arcade.key.LEFT:
                 if self.choose[:9] =="Map width":
@@ -422,10 +427,14 @@ class Menu:
                     if self.pacman_lives<1:
                         self.pacman_lives=1
                     self.game_settings[3]="PacMan Lives   "+str(self.pacman_lives)
-
+                elif self.choose[:9]=="Fear Time":
+                    self.fear_time-=1
+                    if self.fear_time<0:
+                        self.fear_time=0
+                    self.game_settings[4]="Fear Time   "+str(self.fear_time)
 
             if key == arcade.key.ENTER or key==arcade.key.SPACE:
-                print(self.path)
+                #print(self.path)
                 self.changed=False
                 self.switch=True
                 self.switch_pos=-self.SCREEN_HEIGHT/11*4
@@ -492,7 +501,25 @@ class Menu:
                 self.start_pos=i+1
                 break
         self.pac_size=20*self.scale
-"""        import matplotlib.pyplot as plt
+        """        import matplotlib.pyplot as plt
         self.map[i][n]=3
         plt.imshow(self.map,cmap='hot')
         plt.show()"""
+
+    def before_death(self, points):
+        print(self.rank_name,self.rank_points)
+        for i in range(5):
+            if points>self.rank_points[i]:
+                for j in range(1,5-i):
+                    self.rank_points[5-j]=self.rank_points[4-j]
+                    self.rank_name[5-j]=self.rank_name[4-j]
+                self.rank_points[i]=points
+                self.rank_name[i]=self.user_name
+                break
+        
+        with open("data/rank_points","w") as f:
+            for i in self.rank_points:
+                f.write(str(i)+"\n")
+        with open("data/rank_name","w") as f:
+            for i in self.rank_name:
+                f.write(str(i)+"\n")

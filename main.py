@@ -27,23 +27,21 @@ class MyGame(arcade.Window):
 
         self.game_running=False
         self.pause=True
+        self.game_over_tick=0
+        self.game_over=False
 
         self.menu = main_menu.Menu(width, height)
 
-        self.godmod=False
-        self.godmod_tick=0
     
 
         arcade.set_background_color(arcade.color.BLACK)
 
         self.test=0
         self.up=True
-
+        self.death_tick=0
+        self.dead=False
         
-        self.rotation=0
-        self.x_pos=400  
-        self.y_pos=300
-    
+
 
     def on_draw(self):
         arcade.start_render()
@@ -52,9 +50,15 @@ class MyGame(arcade.Window):
             self.menu.Draw()
         else:
             self.draw_background()
-            self.pacman.Draw()
+            if not self.dead:
+                self.pacman.Draw()
             for i in range(self.ghost_num):
                     self.ghost[i].Draw()
+            if self.dead:
+                pos=self.pos([self.pacman.pos_on_map[0]+self.pacman.down,self.pacman.pos_on_map[1]+self.pacman.right])
+                arcade.draw_arc_filled(pos[0]-2, pos[1]-2,
+                    self.pac_size,self.pac_size,arcade.color.YELLOW,0,360-2*self.pacman.mouth_tick-self.death_tick*120,self.pacman.mouth_tick+90*self.pacman.direction+self.death_tick*60)
+
             if self.pause:
                 arcade.draw_text(
                     self.pause_text,
@@ -140,20 +144,38 @@ class MyGame(arcade.Window):
 
     def on_update(self, delta_time):
         if self.game_running:
-            if not self.pause:
+            if not self.pause and not self.dead:
                 self.pacman.Update(delta_time)
                 self.event_on_get()
+                time_to_release_incresed=False
                 for i in range(self.ghost_num):
                     self.ghost[i].Update(delta_time)
-                if any(self.pacman.pos_on_map==i.pos_on_map for i in self.ghost):
-                    print("Dead")
-                    self.pacman.lives-=1
+                    if self.pacman.pos_on_map==self.ghost[i].pos_on_map:
+                        if self.ghost[i].fear:
+                            self.ghost[i].fear=False
+                            self.ghost[i].fear_tick=0
+                            self.ghost[i].make_captivity=True
+                        else:
+                            if self.ghost[i].free:
+                                if self.pacman.lives>1:
+                                    self.pacman.lives-=1
+                                    self.dead=True
+                                else:
+                                    self.game_over=True
+                                    self.dead=True
+                    if not time_to_release_incresed and not self.ghost[i].free:
+                        self.ghost[i].tick_to_release+=delta_time
+                        time_to_release_incresed=True
+            elif self.game_over:
+                self.sorry_game_over(delta_time)
+            elif self.dead:
+                self.revive(delta_time)
 
             if self.restart:
                 self.start_game()
 
         else:
-            self.menu.on_update(2*delta_time)
+            self.menu.on_update(4*2*delta_time)
             if self.menu.running:
                 self.start_game()
                 self.game_running=True
@@ -181,6 +203,11 @@ class MyGame(arcade.Window):
             self.map[self.pacman.pos_on_map[0]][self.pacman.pos_on_map[1]]=-1
             self.godmod=True
             self.godmod_tick=0
+            for i in range(self.ghost_num):
+                if self.ghost[i].free:
+                    self.ghost[i].fear=True
+                    self.ghost[i].fear_tick=0
+
 
 
     def start_game(self):
@@ -228,7 +255,7 @@ class MyGame(arcade.Window):
         self.ghost_num=self.menu.ghost_number
         color=[(255, 0, 0),(0, 255, 0),(0, 0, 255),(255, 0, 255),(255, 255, 0),(255, 255, 255),(181, 44, 0),(1, 255, 255),(164, 208, 46),(158, 58, 160)]
         for i in range(self.ghost_num):
-            self.ghost.append(ghost.Ghost(self.menu.ghost_speed,self.map,self.pos,[1,1],self.scale,color[i]))
+            self.ghost.append(ghost.Ghost(self.menu.ghost_speed,self.map,self.pos,[1,1],self.scale,color[i], self.menu.fear_time,self.menu.time_to_release))
 
 
     def pos(self,pos_on_map):
@@ -237,6 +264,33 @@ class MyGame(arcade.Window):
         b=self.SCREEN_WIDTH*0.4+self.im_width/2*self.scale-self.im_width*(self.map_size[0]-pos_on_map[1])/self.map_size[0]*self.scale+self.pac_size/2
         return [b,a]
 
+    def revive(self,delta_time):
+        if self.death_tick>3:
+            self.ghost=[]
+            color=[(255, 0, 0),(0, 255, 0),(0, 0, 255),(255, 0, 255),(255, 255, 0),(255, 255, 255),(181, 44, 0),(1, 255, 255),(164, 208, 46),(158, 58, 160)]
+            for i in range(self.ghost_num):
+                self.ghost.append(ghost.Ghost(self.menu.ghost_speed,self.map,self.pos,[1,1],self.scale,color[i], self.menu.fear_time,self.menu.time_to_release))
+            
+            self.pacman.pos_on_map=[self.menu.start_pos-1,len(self.map[0])//2]
+            self.pause=True
+            self.dead=False
+            self.down=0
+            self.right=-1/2
+            self.death_tick=0
+            self.direction=1
+        else:
+            self.death_tick+=delta_time
+            
+    def sorry_game_over(self,delta_tick):
+        self.game_over_tick+=delta_tick
+        self.pause=True
+        self.pause_text="GAME OVER"
+        if self.game_over_tick>3:
+            self.game_over=False
+            self.game_running=False
+            self.dead=False
+            self.menu.before_death(self.points)
+            self.menu = main_menu.Menu(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
 
 def main():
     """ Start the game """
