@@ -41,14 +41,15 @@ class Menu:
 
         self.choose = "Play"
         self.choose_number = 0
-        #self.menu_options = ["Play","How to Play", "Settings", "Scoreboard", "Autors", "Quit"]
-        self.menu_options = ["Play","How to Play", "Scoreboard", "Autors", "Quit"]
+        self.menu_options = ["Play","How to Play", "Settings", "Scoreboard", "Autors", "Quit"]
+        #self.menu_options = ["Play","How to Play", "Scoreboard", "Autors", "Quit"]
         self.settings_options = ["Keyboard", "Sound", "Back"]
+        self.sound_options = ["Volume   10", "Music Volume   10","Back"]
         #self.play_options=["Play", "1 player", "Map", "Game settings","Back"]
         self.play_options=["Play", "Map","Game settings","Back"]
         self.game_settings=["Ghosts number   4","Ghost Speed   4","PacMan Speed   5", "PacMan Lives   3","Fear Time   5", "Back"]
         self.map_options=["Map width   9","Map height   9","Back"]
-        self.keyboard_settings=["UP"+str(self.up_key),"DOWN","RIGHT","LEFT","Back"]
+        self.keyboard_settings=["UP   UpArrow","DOWN   DownArrow","RIGHT   RightArrow","LEFT   LeftArrow","Back"]
         self.options=self.menu_options
 
         self.changed=False
@@ -63,14 +64,25 @@ class Menu:
         self.rank_points=[]
         self.rank_name=[]
 
-        #try:
-        with open("data/rank_points","r") as f:
-            self.rank_points = [int(x) for x in f]
-        with open("data/rank_name","r") as f:
-            self.rank_name=f.read().splitlines()
-       # except:
-         #   pass
+        try:
+            with open("data/rank_points","r") as f:
+                self.rank_points = [int(x) for x in f]
+            with open("data/rank_name","r") as f:
+                self.rank_name=f.read().splitlines()
+        except:
+            self.rank_points = [0 for i in range(5)]
+            self.rank_name = ["Empty" for i in range(5)]
+        
+        if len(self.rank_name)<5 or len(self.rank_points)<5:
+            a=min(len(self.rank_name),len(self.rank_points))
+            self.rank_name = self.rank_name[:a]
+            self.rank_points = self.rank_points[:a]
+            for i in range(5-a):
+                self.rank_name.append("Empty")
+                self.rank_points.append(0)
 
+        self.volume=10
+        self.music_volume=10
 
         self.rank=[]
         for i in range(min(len(self.rank_points),len(self.rank_name),5)):
@@ -90,7 +102,7 @@ class Menu:
                 anchor_x="center",
                 anchor_y="center"
             )
-            if self.main_menu: # and not self.switch:
+            if self.main_menu:
                 for i in range(len(self.options)-1):
                     color=arcade.csscolor.WHITE_SMOKE
                     if i == self.choose_number:
@@ -134,9 +146,9 @@ class Menu:
                     arcade.color.YELLOW,0,
                     360-self.tick*2,self.switch_rotation+self.tick)
             if self.lets_the_game_begin:
-                arcade.draw_arc_filled(self.SCREEN_WIDTH/4*3,self.SCREEN_HEIGHT/11*7,40,40,arcade.color.YELLOW,0,300,30)
-                arcade.draw_arc_filled(self.SCREEN_WIDTH/4,self.SCREEN_HEIGHT/11*7,40,40,arcade.color.YELLOW,0,300,30)
-        else:
+                arcade.draw_arc_filled(self.SCREEN_WIDTH/5*4,self.SCREEN_HEIGHT/11*7,40,40,arcade.color.YELLOW,0,300,30)
+                arcade.draw_arc_filled(self.SCREEN_WIDTH/5,self.SCREEN_HEIGHT/11*7,40,40,arcade.color.YELLOW,0,300,30)
+        else: # Start Game - animation
             if self.game_prep_tick<2:
                 arcade.draw_arc_filled(self.SCREEN_WIDTH/5*4,self.SCREEN_HEIGHT/11*7,40,40,arcade.color.YELLOW,0,300,30)
                 arcade.draw_arc_filled(self.SCREEN_WIDTH/5,self.SCREEN_HEIGHT/11*7,40,40,arcade.color.YELLOW,0,300,30)
@@ -327,6 +339,12 @@ class Menu:
                     self.choose=self.options[self.choose_number]
                     self.path.append("self.keyboard_settings")
 
+                elif self.choose == "Sound":
+                    self.options=self.sound_options
+                    self.choose_number=len(self.options)-1
+                    self.choose=self.options[self.choose_number]
+                    self.path.append("self.sound_options")
+
                 elif self.choose == "Game settings":
                     self.options=self.game_settings
                     self.choose_number=len(self.options)-1
@@ -356,14 +374,14 @@ class Menu:
             elif key == arcade.key.RIGHT:
                 if self.choose[:9] =="Map width":
                     self.map_size[1]+=1
-                    if self.map_size[1]>50:
-                        self.map_size[1]=25
+                    if self.map_size[1]>10:
+                        self.map_size[1]=10
                     d="   "+str(self.map_size[1]*2-1)
                     self.map_options[0]="Map width"+d[-4:]
                 elif self.choose[:9] =="Map heigh":
                     self.map_size[0]+=1
-                    if self.map_size[0]>50:
-                        self.map_size[0]=50
+                    if self.map_size[0]>14:
+                        self.map_size[0]=14
                     d="   "+str(self.map_size[0])
                     self.map_options[1]="Map height"+d[-4:]
                 
@@ -374,8 +392,8 @@ class Menu:
                     self.game_settings[0]="Ghosts number   "+str(self.ghost_number)
                 elif self.choose[:11]=="Ghost Speed":
                     self.ghost_speed+=1
-                    if self.ghost_speed>10:
-                        self.ghost_speed=10
+                    if self.ghost_speed>7:
+                        self.ghost_speed=7
                     self.game_settings[1]="Ghost Speed   "+str(self.ghost_speed)
                 elif self.choose[:12]=="PacMan Speed":
                     self.pacman_speed+=1
@@ -392,6 +410,17 @@ class Menu:
                     if self.fear_time>15:
                         self.fear_time=15
                     self.game_settings[4]="Fear Time   "+str(self.fear_time)
+
+                if self.choose[:6]=="Volume":
+                    self.volume+=1
+                    if self.volume>10:
+                        self.volume=10
+                    self.sound_options[0]="Volume   "+str(self.volume)
+                elif self.choose[:12]=="Music Volume":
+                    self.music_volume+=1
+                    if self.music_volume>10:
+                        self.music_volume=10
+                    self.sound_options[1]="Music Volume   "+str(self.music_volume)
 
             elif key == arcade.key.LEFT:
                 if self.choose[:9] =="Map width":
@@ -432,6 +461,17 @@ class Menu:
                     if self.fear_time<0:
                         self.fear_time=0
                     self.game_settings[4]="Fear Time   "+str(self.fear_time)
+
+                if self.choose[:6]=="Volume":
+                    self.volume-=1
+                    if self.volume<0:
+                        self.volume=0
+                    self.sound_options[0]="Volume   "+str(self.volume)
+                elif self.choose[:12]=="Music Volume":
+                    self.music_volume-=1
+                    if self.music_volume<0:
+                        self.music_volume=0
+                    self.sound_options[1]="Music Volume   "+str(self.music_volume)
 
             if key == arcade.key.ENTER or key==arcade.key.SPACE:
                 #print(self.path)
@@ -474,9 +514,18 @@ class Menu:
                     self.changed=True
                     self.switch=False
                 
+                elif self.options==self.keyboard_settings:
+                    self.changed=True
+                    self.switch=False
+
+                elif self.options==self.sound_options:
+                    self.changed=True
+                    self.switch=False
+
                 elif self.options==self.rank:
                     self.changed=True
                     self.switch=False
+                
                 else:
                     self.switch_buffor=self.choose
 

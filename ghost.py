@@ -12,10 +12,18 @@ class Ghost:
         self.pos=pos
         #pos=self.pos([len(self.map)//3,len(self.map[0])//2])
         self.direction=5
-        self.pos_on_map=[len(self.map)//3+2,len(self.map[0])//2]
+        #if len(self.map)%3==0:
+        self.pos_on_map=[(len(self.map))//3+2,len(self.map[0])//2]
+        self.down=-(1)*((len(self.map)/3-1)%3)
+        print(len(self.map))
+
+        """elif len(self.map)%3==1:
+            self.pos_on_map=[(len(self.map)-1)//3+2,len(self.map[0])//2]
+        else:
+            self.pos_on_map=[(len(self.map)-2)//3+2,len(self.map[0])//2]"""
         #self.pos_on_map=[1,1]
         self.right=-1/2
-        self.down=0
+        #self.down=0
         self.last_choosen_on=0
         self.scale=scale
         self.way=0
@@ -46,14 +54,16 @@ class Ghost:
         self.fear_tick=0
         self.fear_time=fear_time
 
+
+
     
 
     def Draw(self):
         pos=self.pos([self.pos_on_map[0]+self.down,self.pos_on_map[1]+self.right])  
         if self.make_captivity:
             go_to=self.pos([len(self.map)//3+2,len(self.map[0])//2])
-            pos[0]=pos[0]*(2-self.tick_to_captivity)/2 + go_to[0]*(self.tick_to_captivity)/2
-            pos[1]=pos[1]*(2-self.tick_to_captivity)/2 + go_to[1]*(self.tick_to_captivity)/2
+            pos[0]=pos[0]*(2-self.tick_to_captivity)/2 + go_to[0]*(self.tick_to_captivity)/2*self.scale
+            pos[1]=pos[1]*(2-self.tick_to_captivity)/2 + go_to[1]*(self.tick_to_captivity)/2*self.scale
             #print(pos)
         if self.fear:
             self.sprite_fear.draw_scaled(pos[0],pos[1],self.scale,0,255)

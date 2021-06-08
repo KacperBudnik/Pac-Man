@@ -41,6 +41,14 @@ class MyGame(arcade.Window):
         self.death_tick=0
         self.dead=False
         
+        self.godmod=False
+        #self.point_sound = arcade.load_sound("sounds/pacman_chomp.wav")
+        self.point_sound_tick=True
+        self.small_point_sound = arcade.load_sound("sounds/munch_1.wav")
+        self.big_point_sound = arcade.load_sound("sounds/munch_2.wav")
+        self.godmod_sound = arcade.load_sound("sounds/pacman_intermission.wav")
+        self.pursuit_level=0
+        self.pursuit = [arcade.load_sound("sounds/siren_"+str(i+1)+".wav") for i in range(5)]
 
 
     def on_draw(self):
@@ -145,6 +153,12 @@ class MyGame(arcade.Window):
     def on_update(self, delta_time):
         if self.game_running:
             if not self.pause and not self.dead:
+                if self.godmod:
+                    self.godmod_tick+=delta_time
+                    if self.godmod_tick>self.godmod_time:
+                        self.godmod_tick=0
+                        self.godmod=False
+                        arcade.stop_sound(self.god_song_play)
                 self.pacman.Update(delta_time)
                 self.event_on_get()
                 time_to_release_incresed=False
@@ -155,6 +169,7 @@ class MyGame(arcade.Window):
                             self.ghost[i].fear=False
                             self.ghost[i].fear_tick=0
                             self.ghost[i].make_captivity=True
+                            self.points+=1000
                         else:
                             if self.ghost[i].free:
                                 if self.pacman.lives>1:
@@ -172,6 +187,10 @@ class MyGame(arcade.Window):
                 self.revive(delta_time)
 
             if self.restart:
+                self.godmod_tick=0
+                if self.godmod:
+                    self.godmod=False   
+                    arcade.sound.stop_sound(self.god_song_play)
                 self.start_game()
 
         else:
@@ -184,8 +203,13 @@ class MyGame(arcade.Window):
         if self.game_running:
             if key==self.pause_butt:
                 self.pause=not self.pause
+                if self.pause:
+                    arcade.stop_sound(self.play_chase)
+                else:
+                    self.play_chase = arcade.play_sound(self.pursuit[self.pursuit_level],self.music_volume,0,True)
             elif self.pause:
                 self.pause=not self.pause
+                self.play_chase = arcade.play_sound(self.pursuit[self.pursuit_level],self.music_volume,0,True)
             if not self.pause:
                 self.pacman.Key_press(key)
 
@@ -198,16 +222,34 @@ class MyGame(arcade.Window):
         if event == 1:
             self.points +=10
             self.map[self.pacman.pos_on_map[0]][self.pacman.pos_on_map[1]]=-1
+            if self.point_sound_tick:
+                arcade.play_sound(self.small_point_sound,self.volume)
+                self.point_sound_tick = not self.point_sound_tick
+            else:
+                arcade.play_sound(self.big_point_sound,self.volume)
+                self.point_sound_tick = not self.point_sound_tick
         elif event == 2:
             self.points +=100
             self.map[self.pacman.pos_on_map[0]][self.pacman.pos_on_map[1]]=-1
+            if not self.godmod:
+                self.god_song_play = arcade.play_sound(self.godmod_sound,self.volume,0,True)
             self.godmod=True
             self.godmod_tick=0
+            if self.point_sound_tick:
+                arcade.play_sound(self.small_point_sound,self.volume)
+                self.point_sound_tick = not self.point_sound_tick
+            else:
+                arcade.play_sound(self.big_point_sound,self.volume)
+                self.point_sound_tick = not self.point_sound_tick
             for i in range(self.ghost_num):
                 if self.ghost[i].free:
                     self.ghost[i].fear=True
                     self.ghost[i].fear_tick=0
-
+        if 1-self.pursuit_level/5>=self.points_left/self.points_number:
+            self.pursuit_level+=1
+            print(self.pursuit_level)
+            #arcade.stop_sound(self.pursuit[self.pursuit_level])
+            #arcade.play_sound(self.pursuit[self.pursuit_level+1],self.volume,0,True)
 
 
     def start_game(self):
@@ -251,12 +293,18 @@ class MyGame(arcade.Window):
         self.map[-2][1]=2
         self.map[-2][-2]=2
 
+        self.points_number=sum(1 for i in range(len(self.map)) for j in range(len(self.map[0])) if self.map[i][j]>0)
+        self.points_left=self.points_number
+
         self.ghost=[]
         self.ghost_num=self.menu.ghost_number
         color=[(255, 0, 0),(0, 255, 0),(0, 0, 255),(255, 0, 255),(255, 255, 0),(255, 255, 255),(181, 44, 0),(1, 255, 255),(164, 208, 46),(158, 58, 160)]
         for i in range(self.ghost_num):
             self.ghost.append(ghost.Ghost(self.menu.ghost_speed,self.map,self.pos,[1,1],self.scale,color[i], self.menu.fear_time,self.menu.time_to_release))
 
+        self.volume=self.menu.volume/10
+        self.music_volume = self.menu.music_volume/10
+        self.godmod_time=self.menu.fear_time
 
     def pos(self,pos_on_map):
         

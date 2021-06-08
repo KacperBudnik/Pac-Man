@@ -83,22 +83,22 @@ class Pac_man:
 
 
         
-        if self.direction_buff==0  and -self.pac_speed/50<=self.down<=self.pac_speed/50:
+        if self.direction_buff==0  and -self.pac_speed/25<=self.down<=self.pac_speed/25:
             if self.map[self.pos_on_map[0]][self.pos_on_map[1]+1] != 0:
                 self.direction=self.direction_buff
                 self.down=0
 
-        elif self.direction_buff==1 and -self.pac_speed/50<=self.right<=self.pac_speed/50:
+        elif self.direction_buff==1 and -self.pac_speed/25<=self.right<=self.pac_speed/25:
             if self.map[self.pos_on_map[0]-1][self.pos_on_map[1]] != 0:
                 self.direction=self.direction_buff
                 self.right=0
 
-        elif self.direction_buff==2 and -self.pac_speed/50<=self.down<=self.pac_speed/50:
+        elif self.direction_buff==2 and -self.pac_speed/25<=self.down<=self.pac_speed/25:
             if self.map[self.pos_on_map[0]][self.pos_on_map[1]-1] != 0:
                 self.direction=self.direction_buff
                 self.down=0
 
-        elif self.direction_buff==3 and -self.pac_speed/50<=self.right<=self.pac_speed/50:
+        elif self.direction_buff==3 and -self.pac_speed/25<=self.right<=self.pac_speed/25:
             if self.map[self.pos_on_map[0]+1][self.pos_on_map[1]] != 0:
                 self.direction=self.direction_buff
                 self.right=0
