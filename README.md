@@ -36,4 +36,4 @@ To run the game through interpreter, **Python 3.9.5** is recommended. Following 
     `pip install -r requirements.txt`
 3. Run the game:
 
-    `python Pac-Man`
+    `python main.py`
