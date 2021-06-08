@@ -5,7 +5,12 @@ import os
 import webbrowser
 
 class Menu:
+    """ Main Menu class"""
     def __init__(self, width, height):
+        """ Initializing main menu
+            :param:
+                width (int): width of screen
+                height (int): height of screen"""
         self.SCREEN_WIDTH = width
         self.SCREEN_HEIGHT = height
 
@@ -67,9 +72,9 @@ class Menu:
         self.rank_name=[]
 
         try:
-            with open("data/rank_points","r") as f:
+            with open("assets/data/rank_points","r") as f:
                 self.rank_points = [int(x) for x in f]
-            with open("data/rank_name","r") as f:
+            with open("assets/data/rank_name","r") as f:
                 self.rank_name=f.read().splitlines()
         except:
             self.rank_points = [0 for i in range(5)]
@@ -92,6 +97,7 @@ class Menu:
         self.rank.append("Back")
 
     def Draw(self):
+        """ Draw main menu """
         if not self.lets_the_game_begin or self.switch:
             arcade.draw_text(
                 "Pac Man",
@@ -274,6 +280,9 @@ class Menu:
                 )
    
     def on_update(self, delta_time):
+        """ Update main menu
+            :param:
+                delta_time (float): time since the last execution of the function"""
         change=False
         if self.switch:
             if self.tick_up:
@@ -367,6 +376,9 @@ class Menu:
             self.game_prep_tick+=delta_time
 
     def key_press(self, key):
+        """ Called whenever a key is pressed in main menu
+            :param:
+                key (int): kod of pressed key"""
         if not self.switch and not self.lets_the_game_begin:
             if key == arcade.key.DOWN:
                 self.choose_number=(self.choose_number + 1)%len(self.options)
@@ -553,16 +565,12 @@ class Menu:
                     self.switch_buffor=self.choose
 
     def prepare_game(self):
+        """ Activeted when play was pressed, generating map"""
         self.map_im, self.map=map.map_background_generation(self.map_size[0],self.map_size[1])
         width, height = self.map_im.size
-        if height/1.5>self.SCREEN_HEIGHT*0.8 or width/1.5>self.SCREEN_WIDTH*0.8:
-            self.scroll=True
-            self.scale=1
-        else:
-            #self.scroll=False
-            self.scale=min(self.SCREEN_HEIGHT*0.8/height,self.SCREEN_WIDTH*0.8/width)
-            #self.map_start = [self.SCREEN_WIDTH*0.4*(1-self.scale),self.SCREEN_HEIGHT*0.4*(1-self.scale)]
-            #self.map_end = [self.SCREEN_WIDTH*0.4*(1+self.scale),self.SCREEN_HEIGHT*0.4*(1+self.scale)]
+
+        self.scale=min(self.SCREEN_HEIGHT*0.8/height,self.SCREEN_WIDTH*0.8/width)
+
         self.background=arcade.Texture("whatever",self.map_im)
         
         n=len(self.map[0])//2
@@ -573,12 +581,12 @@ class Menu:
                 self.start_pos=i+1
                 break
         self.pac_size=20*self.scale
-        """        import matplotlib.pyplot as plt
-        self.map[i][n]=3
-        plt.imshow(self.map,cmap='hot')
-        plt.show()"""
+
 
     def before_death(self, points):
+        """ After pacman death save his score and write in file if he was in top5
+            "param:
+                points (int): score"""
         for i in range(5):
             if points>self.rank_points[i]:
                 for j in range(1,5-i):

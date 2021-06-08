@@ -3,9 +3,23 @@ import arcade
 
 
 class Pac_man:
-    """ Main application class. """
+    """ Main hero class. """
 
-    def __init__(self,map, up,right,down,left, pac_pos,pac_size, pos ,pos_on_map, scale,speed,lives):
+    def __init__(self,map, up,right,down,left,pac_size, pos ,pos_on_map, scale,speed,lives):
+        """ Initialize pacman. 
+            :param:
+                map (Vector{Vector}): game map
+                up (int): pacman direction change key (up)
+                right (int): pacman direction change key (right)
+                down (int): pacman direction change key (down)
+                left (int): pacman direction change key (left)  
+                pac_size (flaot): scaled pacman size
+                pos (function): function to calculate positon related to Window
+                pos_on_map (int): pacman start position on map
+                scale (float): scale of map image
+                speed (int): pacman speed 
+                lives (int): number of lives
+                """     
         self.right_key=right
         self.left_key=left
         self.down_key=down
@@ -24,7 +38,6 @@ class Pac_man:
 
         self.mouth_tick=30
 
-        self.pac_pos=pac_pos
         self.pac_size=pac_size
         self.scale=scale
 
@@ -42,11 +55,15 @@ class Pac_man:
     
 
     def Draw(self):
+        """ Draw pacman"""
         pos=self.pos([self.pos_on_map[0]+self.down,self.pos_on_map[1]+self.right])
         arcade.draw_arc_filled(pos[0]-2, pos[1]-2,
         self.pac_size,self.pac_size,arcade.color.YELLOW,0,360-2*self.mouth_tick,self.mouth_tick+90*self.direction)
         
     def Update(self, delta_time):
+        """ Update pacman 
+            :param:
+                    delta_time (float): time since the last execution of the function"""
         if self.up:
             self.mouth_tick+=60*delta_time
             if self.mouth_tick>30:
@@ -121,6 +138,9 @@ class Pac_man:
 
 
     def Key_press(self, key):
+        """ Called whenever a key is pressed while playing
+            :param:
+                key (int): kod of pressed key"""
         if key == self.right_key:
             self.direction_buff=0
         elif key == self.left_key:

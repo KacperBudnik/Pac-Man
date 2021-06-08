@@ -4,9 +4,19 @@ from PIL import Image
 from numpy import array
 
 class Ghost:
-    """ Main application class. """
+    """ Ghost class. """
 
-    def __init__(self,speed,map,pos,start_pos,scale,color,fear_time,time_to_release):
+    def __init__(self,speed,map,pos,scale,color,fear_time,time_to_release):
+        """ Initializing pacman's enemy. 
+            :param:
+                speed (int): speed of Ghost
+                map (Vector{Vector}): game map
+                pos (function): function to calculate positon related to Window
+                scale (float): scale of map image
+                color (tupple): tupple with ghost color in RGB format
+                fear_time (int): time of ghost fear
+                time_to_release (int): time in captivity """
+                
         self.speed=speed
         self.map=map
         self.pos=pos
@@ -15,14 +25,7 @@ class Ghost:
         #if len(self.map)%3==0:
         self.pos_on_map=[(len(self.map))//3+2,len(self.map[0])//2]
         self.down=-(1)*((len(self.map)/3-1)%3)
-
-        """elif len(self.map)%3==1:
-            self.pos_on_map=[(len(self.map)-1)//3+2,len(self.map[0])//2]
-        else:
-            self.pos_on_map=[(len(self.map)-2)//3+2,len(self.map[0])//2]"""
-        #self.pos_on_map=[1,1]
         self.right=-1/2
-        #self.down=0
         self.last_choosen_on=0
         self.scale=scale
         self.way=0
@@ -58,18 +61,21 @@ class Ghost:
     
 
     def Draw(self):
+        """ Draw ghost on map """
         pos=self.pos([self.pos_on_map[0]+self.down,self.pos_on_map[1]+self.right])  
         if self.make_captivity:
-            go_to=self.pos([len(self.map)//3+2,len(self.map[0])//2])
-            pos[0]=pos[0]*(2-self.tick_to_captivity)/2 + go_to[0]*(self.tick_to_captivity)/2*self.scale
-            pos[1]=pos[1]*(2-self.tick_to_captivity)/2 + go_to[1]*(self.tick_to_captivity)/2*self.scale
+            go_to=self.pos([(len(self.map))//3+2+self.down,len(self.map[0])//2+self.right])
+            pos[0]=pos[0]*(2-self.tick_to_captivity)/2 + go_to[0]*(self.tick_to_captivity)/2
+            pos[1]=pos[1]*(2-self.tick_to_captivity)/2 + go_to[1]*(self.tick_to_captivity)/2
         if self.fear:
             self.sprite_fear.draw_scaled(pos[0],pos[1],self.scale,0,255)
         else:
             self.sprite.draw_scaled(pos[0],pos[1],self.scale,0,255)
         
     def Update(self, delta_time):
-        #self.way+=delta_time
+        """ Update ghost position, direction, ect.
+            :param:
+                    delta_time (float): time since the last execution of the function"""
         if self.make_free:
             self.let_free(delta_time)
         elif self.make_captivity:
@@ -112,7 +118,7 @@ class Ghost:
             
 
     def choose_direct(self):
-
+        """ Choose next ghost direction"""
         if self.last_choosen_on != self.pos_on_map and -0.1<=self.down<=0.1 and -0.1<=self.right<=0.1:
             self.last_choosen_on=self.pos_on_map.copy()
             choises=[]
@@ -143,6 +149,9 @@ class Ghost:
 
 
     def let_free(self,delta_tick):
+        """ Set position after ghost release 
+            :param:
+                    delta_time (float): time since the last execution of the function"""
         self.down-=delta_tick
         self.tick_to_release+=delta_tick
         if self.tick_to_release>2:
@@ -153,6 +162,9 @@ class Ghost:
             self.tick_to_release=0
 
     def take_freedom(self, delta_tick):
+        """ Set ghost position after its death
+            :param:
+                    delta_time (float): time since the last execution of the function"""
         self.free=False
         self.direction=5
         if self.tick_to_captivity<2:
@@ -161,7 +173,7 @@ class Ghost:
             self.make_captivity=False
             self.tick_to_captivity=0
             self.pos_on_map=[len(self.map)//3+2,len(self.map[0])//2]
-            self.down=0
+            self.down=-(1)*((len(self.map)/3-1)%3)
             self.right=-1/2
             self.free=False
 

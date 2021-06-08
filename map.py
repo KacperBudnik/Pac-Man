@@ -3,7 +3,13 @@ import random
 from PIL import Image
 
 def map_generator(m:int=9, n:int=5,block_size:int=4):
-
+    """ Generate random map
+        :param:
+            m (int): number of rows
+            n (int): number of columns
+            block_size (int): maximum size of block
+        :return:
+            (Vector{Vector}) game map"""
     if m<2 or n<2:
         print("błędne wartości przyjmuję m=9, n=5")
         m=9
@@ -65,12 +71,15 @@ def map_generator(m:int=9, n:int=5,block_size:int=4):
 
     return map
 
-    #plt.imshow(map,cmap='hot')
-    #plt.show()
-
 
 def map_background_generation(m:int=9, n:int=5,block_size:int=4):
-
+    """ Generate random map and its image
+        :param:
+            m (int): number of rows
+            n (int): number of columns
+            block_size (int): maximum size of block
+        :return:
+            (Vector) vector with game map in vector of vector in first positon and PIL image of map on secound positon """
     thickness=6
     line_width=2
     maps=map_generator(m,n,block_size)

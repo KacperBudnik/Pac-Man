@@ -3,8 +3,6 @@ import arcade
 import os
 from PIL import Image
 
-# Własne
-#import map
 import Pacman
 import main_menu
 import ghost
@@ -13,6 +11,11 @@ class MyGame(arcade.Window):
     """ Main application class. """
 
     def __init__(self,width, height, title):
+        """ Initializing main application
+            :param:
+                width (int): width of window
+                height (int): height of window
+                title (str): title of window"""
         super().__init__(width, height, title)
         self.SCREEN_WIDTH = width
         self.SCREEN_HEIGHT = height
@@ -58,6 +61,7 @@ class MyGame(arcade.Window):
 
 
     def on_draw(self):
+        """ Draw everything """
         arcade.start_render()
 
         if not self.game_running:
@@ -69,6 +73,7 @@ class MyGame(arcade.Window):
             for i in range(self.ghost_num):
                     self.ghost[i].Draw()
             if self.dead:
+    
                 pos=self.pos([self.pacman.pos_on_map[0]+self.pacman.down,self.pacman.pos_on_map[1]+self.pacman.right])
                 arcade.draw_arc_filled(pos[0]-2, pos[1]-2,
                     self.pac_size,self.pac_size,arcade.color.YELLOW,0,360-2*self.pacman.mouth_tick-self.death_tick*120,self.pacman.mouth_tick+90*self.pacman.direction+self.death_tick*60)
@@ -89,6 +94,7 @@ class MyGame(arcade.Window):
 
 
     def draw_points(self):
+        """ Draw points on map """
         self.restart=True
         for i in range(1,self.map_size[1]-1):
             for j in range(1,self.map_size[0]-1):
@@ -100,10 +106,13 @@ class MyGame(arcade.Window):
                     arcade.draw_circle_filled(pos[0],pos[1],6*self.scale,arcade.color.LIGHT_YELLOW)
                     arcade.draw_circle_outline(pos[0],pos[1],6*self.scale,arcade.color.ORANGE,1)
                     self.restart=False
+        if self.restart:
+            arcade.stop_sound(self.play_chase)
 
 
 
     def draw_background(self):
+        """ Draw background"""
         self.background.draw_scaled(self.SCREEN_WIDTH*0.4,self.SCREEN_HEIGHT*0.4,self.scale,0)
         self.draw_points()
         arcade.draw_rectangle_filled(self.SCREEN_WIDTH*0.5,self.SCREEN_HEIGHT*0.9,self.SCREEN_WIDTH,self.SCREEN_HEIGHT*0.2,(0,0,30))
@@ -157,6 +166,9 @@ class MyGame(arcade.Window):
 
 
     def on_update(self, delta_time):
+        """ Update everything 
+            :param:
+                delta_time (int): time since the last execution of the function"""
         if self.game_running:
             if not self.pause and not self.dead:
                 if self.godmod:
@@ -168,31 +180,35 @@ class MyGame(arcade.Window):
                 self.pacman.Update(delta_time)
                 self.event_on_get()
                 time_to_release_incresed=False
-                for i in range(self.ghost_num):
-                    self.ghost[i].Update(delta_time)
-                    if self.pacman.pos_on_map==self.ghost[i].pos_on_map:
-                        if self.ghost[i].fear:
-                            self.ghost[i].fear=False
-                            self.ghost[i].fear_tick=0
-                            self.ghost[i].make_captivity=True
-                            self.points+=1000
-                        else:
-                            if self.ghost[i].free:
-                                if self.pacman.lives>1:
-                                    self.pacman.lives-=1
-                                    arcade.stop_sound(self.god_song_play)
-                                    arcade.stop_sound(self.play_chase)
-                                    arcade.play_sound(self.death_song)
-                                    self.dead=True
-                                else:
-                                    arcade.stop_sound(self.god_song_play)
-                                    arcade.stop_sound(self.play_chase)
-                                    arcade.play_sound(self.death_song)
-                                    self.game_over=True
-                                    self.dead=True
-                    if not time_to_release_incresed and not self.ghost[i].free:
-                        self.ghost[i].tick_to_release+=delta_time
-                        time_to_release_incresed=True
+                try:
+                    for i in range(self.ghost_num):
+                        self.ghost[i].Update(delta_time)
+                        if self.pacman.pos_on_map==self.ghost[i].pos_on_map:
+                            if self.ghost[i].fear:
+                                self.ghost[i].fear=False
+                                self.ghost[i].fear_tick=0
+                                self.ghost[i].make_captivity=True
+                                self.points+=1000
+                            else:
+                                if self.ghost[i].free:
+                                    if self.pacman.lives>1:
+                                        self.pacman.lives-=1
+                                        arcade.stop_sound(self.god_song_play)
+                                        arcade.stop_sound(self.play_chase)
+                                        arcade.play_sound(self.death_song)
+                                        self.dead=True
+                                    else:
+                                        self.pacman.lives-=1
+                                        arcade.stop_sound(self.god_song_play)
+                                        arcade.stop_sound(self.play_chase)
+                                        arcade.play_sound(self.death_song)
+                                        self.game_over=True
+                                        self.dead=True
+                        if not time_to_release_incresed and not self.ghost[i].free:
+                            self.ghost[i].tick_to_release+=delta_time
+                            time_to_release_incresed=True
+                except:
+                    print("Tutaj piesek")
             elif self.game_over:
                 self.sorry_game_over(delta_time)
             elif self.dead:
@@ -203,6 +219,7 @@ class MyGame(arcade.Window):
                 if self.godmod:
                     self.godmod=False   
                     arcade.sound.stop_sound(self.god_song_play)
+                    #arcade.play_sound(self.play_chase,self.volume,0,True)
                 self.start_game()
 
         else:
@@ -211,7 +228,13 @@ class MyGame(arcade.Window):
                 self.start_game()
                 self.game_running=True
 
+
     def on_key_press(self, key, cos):
+        """Called whenever a key is pressed
+            :param:
+                key (int): kod of pressed key
+                cos (any): can by anything"""  
+
         if self.game_running:
             if key==self.pause_butt:
                 self.pause=not self.pause
@@ -219,10 +242,12 @@ class MyGame(arcade.Window):
                     arcade.stop_sound(self.play_chase)
                 else:
                     arcade.sound.stop_sound(self.play_chase)
-                    self.play_chase = arcade.play_sound(self.pursuit[self.pursuit_level],self.music_volume,0,True)
+                    if not self.game_over:
+                        self.play_chase = arcade.play_sound(self.pursuit[self.pursuit_level],self.music_volume,0,True)
             elif self.pause:
                 self.pause=not self.pause
-                self.play_chase = arcade.play_sound(self.pursuit[self.pursuit_level],self.music_volume,0,True)
+                if not self.game_over:
+                    self.play_chase = arcade.play_sound(self.pursuit[self.pursuit_level],self.music_volume,0,True)
             if not self.pause:
                 self.pacman.Key_press(key)
 
@@ -231,46 +256,50 @@ class MyGame(arcade.Window):
             
 
     def event_on_get(self):
-        event=self.map[self.pacman.pos_on_map[0]][self.pacman.pos_on_map[1]]
-        if event == 1:
-            self.points +=10
-            self.map[self.pacman.pos_on_map[0]][self.pacman.pos_on_map[1]]=-1
-            if self.point_sound_tick:
-                arcade.play_sound(self.small_point_sound,self.volume)
-                self.point_sound_tick = not self.point_sound_tick
-            else:
-                arcade.play_sound(self.big_point_sound,self.volume)
-                self.point_sound_tick = not self.point_sound_tick
-        elif event == 2:
-            self.points +=100
-            self.map[self.pacman.pos_on_map[0]][self.pacman.pos_on_map[1]]=-1
-            if not self.godmod:
-                arcade.stop_sound(self.god_song_play)
-                self.god_song_play = arcade.play_sound(self.godmod_sound,self.volume,0,True)
-            self.godmod=True
-            self.godmod_tick=0
-            if self.point_sound_tick:
-                arcade.play_sound(self.small_point_sound,self.volume)
-                self.point_sound_tick = not self.point_sound_tick
-            else:
-                arcade.play_sound(self.big_point_sound,self.volume)
-                self.point_sound_tick = not self.point_sound_tick
-            for i in range(self.ghost_num):
-                if self.ghost[i].free:
-                    self.ghost[i].fear=True
-                    self.ghost[i].fear_tick=0
-        if self.pursuit_level/5>=self.points_left/self.points_number:
-            self.pursuit_level+=1
-            if self.pursuit_level>4:
-                self.pursuit_level=4
-            arcade.stop_sound(self.play_chase)
-            self.play_chase=self.pursuit[self.pursuit_level]
-            arcade.sound.stop_sound(self.play_chase)
-            arcade.play_sound(self.play_chase,self.music_volume,0,True)
+        """ Event on collect points from map """
+        try:
+            event=self.map[self.pacman.pos_on_map[0]][self.pacman.pos_on_map[1]]
+            if event == 1:
+                self.points +=10
+                self.map[self.pacman.pos_on_map[0]][self.pacman.pos_on_map[1]]=-1
+                if self.point_sound_tick:
+                    arcade.play_sound(self.small_point_sound,self.volume)
+                    self.point_sound_tick = not self.point_sound_tick
+                else:
+                    arcade.play_sound(self.big_point_sound,self.volume)
+                    self.point_sound_tick = not self.point_sound_tick
+            elif event == 2:
+                self.points +=100
+                self.map[self.pacman.pos_on_map[0]][self.pacman.pos_on_map[1]]=-1
+                if not self.godmod:
+                    arcade.stop_sound(self.god_song_play)
+                    self.god_song_play = arcade.play_sound(self.godmod_sound,self.volume,0,True)
+                self.godmod=True
+                self.godmod_tick=0
+                if self.point_sound_tick:
+                    arcade.play_sound(self.small_point_sound,self.volume)
+                    self.point_sound_tick = not self.point_sound_tick
+                else:
+                    arcade.play_sound(self.big_point_sound,self.volume)
+                    self.point_sound_tick = not self.point_sound_tick
+                for i in range(self.ghost_num):
+                    if self.ghost[i].free:
+                        self.ghost[i].fear=True
+                        self.ghost[i].fear_tick=0
+            if self.pursuit_level/5>=self.points_left/self.points_number:
+                self.pursuit_level+=1
+                if self.pursuit_level>4:
+                    self.pursuit_level=4
+                arcade.stop_sound(self.play_chase)
+                self.play_chase=self.pursuit[self.pursuit_level]
+                arcade.sound.stop_sound(self.play_chase)
+                arcade.play_sound(self.play_chase,self.music_volume,0,True)
+        except:
+            print("tu jest błąd")
 
 
     def start_game(self):
-        print("Let's the game begin!")
+        """ Initializing game screen, create all ghost, points, ect. """
         self.background=self.menu.background
         self.scale=self.menu.scale
         self.map_im=self.menu.map_im
@@ -281,14 +310,22 @@ class MyGame(arcade.Window):
         self.pac_size=self.menu.pac_size
         self.pac_pos=[self.SCREEN_WIDTH*0.4,self.SCREEN_WIDTH*0.3+self.im_height/2*self.scale-self.im_height*self.menu.start_pos/len(self.map)*self.scale+self.pac_size/2]
         
+        lives = self.menu.pacman_lives
+        try:
+            lives = self.pacman.lives
+            if lives == 0:
+                lives = self.menu.pacman_lives
+        except:
+            pass 
+
         self.pacman=Pacman.Pac_man(self.map,
             self.menu.up_key,self.menu.right_key,self.menu.down_key,self.menu.left_key,
-            self.pac_pos,self.pac_size,
+            self.pac_size,
             self.pos,
             [self.menu.start_pos-1,len(self.map[0])//2],
             self.scale,
             self.menu.pacman_speed,
-            self.menu.pacman_lives)
+            lives)
 
         self.pacfont=self.menu.pacfont
         self.arcade_classic_font=self.menu.arcade_classic_font
@@ -317,41 +354,53 @@ class MyGame(arcade.Window):
         self.ghost_num=self.menu.ghost_number
         color=[(255, 0, 0),(0, 255, 0),(0, 0, 255),(255, 0, 255),(255, 255, 0),(255, 255, 255),(181, 44, 0),(1, 255, 255),(164, 208, 46),(158, 58, 160)]
         for i in range(self.ghost_num):
-            self.ghost.append(ghost.Ghost(self.menu.ghost_speed,self.map,self.pos,[1,1],self.scale,color[i], self.menu.fear_time,self.menu.time_to_release))
+            self.ghost.append(ghost.Ghost(self.menu.ghost_speed,self.map,self.pos,self.scale,color[i], self.menu.fear_time,self.menu.time_to_release))
 
         self.volume=self.menu.volume/10
         self.music_volume = self.menu.music_volume/10
         self.godmod_time=self.menu.fear_time
+        self.death_tick=0
+        self.game_over_tick=0
+        self.game_over=False
         
 
         
 
     def pos(self,pos_on_map):
-        
+        """ Take one position on map, vector with row and colomn
+            :param:
+                pos_on_map (Vector): row and column
+            :return:
+                (Vector): position relative to the window """
         a=self.SCREEN_WIDTH*0.3+self.im_height/2*self.scale-self.im_height*(pos_on_map[0]+1)/self.map_size[1]*self.scale+self.pac_size/2
         b=self.SCREEN_WIDTH*0.4+self.im_width/2*self.scale-self.im_width*(self.map_size[0]-pos_on_map[1])/self.map_size[0]*self.scale+self.pac_size/2
         return [b,a]
 
     def revive(self,delta_time):
+        """ After death prepere restart all ghosts and pacman (position, direction, status ...)
+            :param:
+                delta_time (int): time since the last execution of the function"""
         if self.death_tick>3:
             self.ghost=[]
             color=[(255, 0, 0),(0, 255, 0),(0, 0, 255),(255, 0, 255),(255, 255, 0),(255, 255, 255),(181, 44, 0),(1, 255, 255),(164, 208, 46),(158, 58, 160)]
             for i in range(self.ghost_num):
-                self.ghost.append(ghost.Ghost(self.menu.ghost_speed,self.map,self.pos,[1,1],self.scale,color[i], self.menu.fear_time,self.menu.time_to_release))
+                self.ghost.append(ghost.Ghost(self.menu.ghost_speed,self.map,self.pos,self.scale,color[i], self.menu.fear_time,self.menu.time_to_release))
             
             self.pacman.pos_on_map=[self.menu.start_pos-1,len(self.map[0])//2]
             self.pause=True
             self.dead=False
-            self.down=0
-            self.right=-1/2
+            self.pacman.down=0
+            self.pacman.right=-1/2
             self.death_tick=0
             self.direction=1
             arcade.stop_sound(self.god_song_play)
-            arcade.stop_sound(self.play_chase)
         else:
             self.death_tick+=delta_time
             
     def sorry_game_over(self,delta_tick):
+        """ Activated, when pacman lost last live, restart every thing to main manu screen
+            :param:
+                delta_time (int): time since the last execution of the function  """
         self.game_over_tick+=delta_tick
         self.pause=True
         self.pause_text="GAME OVER"
