@@ -15,7 +15,6 @@ class Ghost:
         #if len(self.map)%3==0:
         self.pos_on_map=[(len(self.map))//3+2,len(self.map[0])//2]
         self.down=-(1)*((len(self.map)/3-1)%3)
-        print(len(self.map))
 
         """elif len(self.map)%3==1:
             self.pos_on_map=[(len(self.map)-1)//3+2,len(self.map[0])//2]
@@ -35,7 +34,7 @@ class Ghost:
         self.make_captivity=False
         self.tick_to_captivity=0
 
-        im = Image.open('img/Ghost_imag.png')
+        im = Image.open('assets/img/Ghost_imag.png')
         im = im.convert('RGBA')
 
         data = array(im)
@@ -45,7 +44,7 @@ class Ghost:
         data[..., :-1][white_areas.T] = color
 
         self.im = Image.fromarray(data)
-        self.im_fear=Image.open('img/Ghost_imag_fear.png')
+        self.im_fear=Image.open('assets/img/Ghost_imag_fear.png')
 
         #self.sprite=arcade.Sprite(arcade.Texture("whatever",im2),center_x=pos[0],center_y=pos[1])
         self.sprite=arcade.Texture("whatever",self.im)
@@ -64,7 +63,6 @@ class Ghost:
             go_to=self.pos([len(self.map)//3+2,len(self.map[0])//2])
             pos[0]=pos[0]*(2-self.tick_to_captivity)/2 + go_to[0]*(self.tick_to_captivity)/2*self.scale
             pos[1]=pos[1]*(2-self.tick_to_captivity)/2 + go_to[1]*(self.tick_to_captivity)/2*self.scale
-            #print(pos)
         if self.fear:
             self.sprite_fear.draw_scaled(pos[0],pos[1],self.scale,0,255)
         else:
@@ -82,17 +80,7 @@ class Ghost:
             except:
                 self.down=0
                 self.right=0
-                """if self.direction == 0:
-                    self.right-=self.speed*delta_time
-                elif self.direction == 1:
-                    self.down+=self.speed*delta_time
-                elif self.direction == 2:
-                    self.right+=self.speed*delta_time
-                elif self.direction == 3:
-                    self.down-=self.speed*delta_time"""
                 self.direction = (self.direction+2)%4
-
-                print("No do ...")
 
             if self.fear:
                 self.fear_tick+=delta_time

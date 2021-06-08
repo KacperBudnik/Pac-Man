@@ -2,6 +2,7 @@ import arcade
 import map
 from PIL import Image
 import os
+import webbrowser
 
 class Menu:
     def __init__(self, width, height):
@@ -22,8 +23,8 @@ class Menu:
         self.up_key=arcade.key.UP
 
         self.running=False
-        self.pacfont="fonts/PAC-FONT"
-        self.arcade_classic_font="fonts/ArcadeClassic"
+        self.pacfont="assets/fonts/PAC-FONT"
+        self.arcade_classic_font="assets/fonts/ArcadeClassic"
         self.path=["self.menu_options"]
 
         self.main_menu = True
@@ -50,6 +51,7 @@ class Menu:
         self.game_settings=["Ghosts number   4","Ghost Speed   4","PacMan Speed   5", "PacMan Lives   3","Fear Time   5", "Back"]
         self.map_options=["Map width   9","Map height   9","Back"]
         self.keyboard_settings=["UP   UpArrow","DOWN   DownArrow","RIGHT   RightArrow","LEFT   LeftArrow","Back"]
+        self.autor_options=["Autor","Kacper Budnik","Sounds","findsounds","classicgaming","Back"]
         self.options=self.menu_options
 
         self.changed=False
@@ -102,6 +104,7 @@ class Menu:
                 anchor_x="center",
                 anchor_y="center"
             )
+
             if self.main_menu:
                 for i in range(len(self.options)-1):
                     color=arcade.csscolor.WHITE_SMOKE
@@ -320,8 +323,10 @@ class Menu:
                     self.path.append("self.settings_options")
 
                 elif self.choose == "Autors":
-                    self.autor == True
-                    #self.path.append("self.autor")
+                    self.options=self.autor_options
+                    self.choose_number=len(self.options)-1
+                    self.choose=self.options[self.choose_number]
+                    self.path.append("self.autor_options")
 
                 elif self.choose == "How to Play":
                     self.how_to= True
@@ -474,7 +479,6 @@ class Menu:
                     self.sound_options[1]="Music Volume   "+str(self.music_volume)
 
             if key == arcade.key.ENTER or key==arcade.key.SPACE:
-                #print(self.path)
                 self.changed=False
                 self.switch=True
                 self.switch_pos=-self.SCREEN_HEIGHT/11*4
@@ -505,7 +509,22 @@ class Menu:
                     self.switch_left=False
                     self.switch_rotation=180
                     self.switch_buffor=self.choose
+
+                elif self.choose=="findsounds":
+                    webbrowser.open("https://www.findsounds.com/")
+                    self.changed=True
+                    self.switch=False
+
+                elif self.choose=="classicgaming":
+                    webbrowser.open("https://www.classicgaming.cc/")
+                    self.changed=True
+                    self.switch=False
                 
+                elif self.choose == "How to Play":
+                    os.system('start assets/"How to Play.pdf"')
+                    self.changed=True
+                    self.switch=False
+
                 elif self.options==self.map_options: 
                     self.changed=True
                     self.switch=False
@@ -519,6 +538,10 @@ class Menu:
                     self.switch=False
 
                 elif self.options==self.sound_options:
+                    self.changed=True
+                    self.switch=False
+
+                elif self.options==self.autor_options:
                     self.changed=True
                     self.switch=False
 
@@ -556,7 +579,6 @@ class Menu:
         plt.show()"""
 
     def before_death(self, points):
-        print(self.rank_name,self.rank_points)
         for i in range(5):
             if points>self.rank_points[i]:
                 for j in range(1,5-i):
@@ -566,9 +588,9 @@ class Menu:
                 self.rank_name[i]=self.user_name
                 break
         
-        with open("data/rank_points","w") as f:
+        with open("assets/data/rank_points","w") as f:
             for i in self.rank_points:
                 f.write(str(i)+"\n")
-        with open("data/rank_name","w") as f:
+        with open("assets/data/rank_name","w") as f:
             for i in self.rank_name:
                 f.write(str(i)+"\n")
