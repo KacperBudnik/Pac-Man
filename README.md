@@ -31,7 +31,7 @@ To run the game through interpreter, **Python 3.9.5** is recommended. Following 
     `git clone  https://github.com/KacperBudnik/Pac-Man.git Pac-Man`
 
     `cd Pac-Man`
-2. Install the project's development and runtime requirements:
+2. Create virtual enviroment, install the project's development and runtime requirements:
 
     `pip install -r requirements.txt`
 3. Run the game:
