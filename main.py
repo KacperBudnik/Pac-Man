@@ -234,7 +234,7 @@ class MyGame(arcade.Window):
                 cos (any): can by anything"""  
 
         if self.game_running:
-            if key==self.pause_butt:
+            if key==self.pause_butt and not self.dead:
                 self.pause=not self.pause
                 if self.pause:
                     arcade.stop_sound(self.play_chase)
