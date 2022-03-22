@@ -53,7 +53,7 @@ class Menu:
         self.sound_options = ["Volume   10", "Music Volume   10","Back"]
         #self.play_options=["Play", "1 player", "Map", "Game settings","Back"]
         self.play_options=["Play", "Map","Game settings","Back"]
-        self.game_settings=["Ghosts number   4","Ghost Speed   4","PacMan Speed   5", "PacMan Lives   3","Fear Time   5", "Back"]
+        self.game_settings=["Normal","Ghosts number   4","Ghost Speed   4","PacMan Speed   5", "PacMan Lives   3","Fear Time   5", "Back"]
         self.map_options=["Map width   9","Map height   9","Back"]
         self.keyboard_settings=["UP   UpArrow","DOWN   DownArrow","RIGHT   RightArrow","LEFT   LeftArrow","Back"]
         self.autor_options=["Autor","Kacper Budnik","Sounds","findsounds","classicgaming","Back"]
@@ -406,27 +406,27 @@ class Menu:
                     self.ghost_number+=1
                     if self.ghost_number>10:
                         self.ghost_number=10
-                    self.game_settings[0]="Ghosts number   "+str(self.ghost_number)
+                    self.game_settings[1]="Ghosts number   "+str(self.ghost_number)
                 elif self.choose[:11]=="Ghost Speed":
                     self.ghost_speed+=1
                     if self.ghost_speed>7:
                         self.ghost_speed=7
-                    self.game_settings[1]="Ghost Speed   "+str(self.ghost_speed)
+                    self.game_settings[2]="Ghost Speed   "+str(self.ghost_speed)
                 elif self.choose[:12]=="PacMan Speed":
                     self.pacman_speed+=1
                     if self.pacman_speed>10:
                         self.pacman_speed=10
-                    self.game_settings[2]="PacMan Speed   "+str(self.pacman_speed)
+                    self.game_settings[3]="PacMan Speed   "+str(self.pacman_speed)
                 elif  self.choose[:12]=="PacMan Lives":
                     self.pacman_lives+=1
                     if self.pacman_lives>10:
                         self.pacman_lives=10
-                    self.game_settings[3]="PacMan Lives   "+str(self.pacman_lives)
+                    self.game_settings[4]="PacMan Lives   "+str(self.pacman_lives)
                 elif self.choose[:9]=="Fear Time":
                     self.fear_time+=1
                     if self.fear_time>15:
                         self.fear_time=15
-                    self.game_settings[4]="Fear Time   "+str(self.fear_time)
+                    self.game_settings[5]="Fear Time   "+str(self.fear_time)
 
                 if self.choose[:6]=="Volume":
                     self.volume+=1
@@ -438,6 +438,60 @@ class Menu:
                     if self.music_volume>10:
                         self.music_volume=10
                     self.sound_options[1]="Music Volume   "+str(self.music_volume)
+
+                if self.choose == "Normal":
+                    self.game_settings[0]="Hard"
+                    self.ghost_number = 8
+                    self.ghost_speed = 5
+                    self.pacman_speed = 4
+                    self.pacman_lives = 1
+                    self.fear_time = 0
+                    self.choose="Hard"
+                    self.game_settings[1]="Ghosts number   "+str(self.ghost_number)
+                    self.game_settings[2]="Ghost Speed   "+str(self.ghost_speed)
+                    self.game_settings[3]="PacMan Speed   "+str(self.pacman_speed)
+                    self.game_settings[4]="PacMan Lives   "+str(self.pacman_lives)
+                    self.game_settings[5]="Fear Time   "+str(self.fear_time)
+                elif self.choose == "Hard":
+                    self.game_settings[0]="Endless"
+                    self.ghost_number = 0
+                    self.pacman_lives = 10
+                    self.pacman_speed = 7
+                    self.fear_time = 0
+                    self.choose="Endless"
+
+                    self.game_settings[1]="Ghosts number   "+str(self.ghost_number)
+                    self.game_settings[2]="Ghost Speed   "+str(self.ghost_speed)
+                    self.game_settings[3]="PacMan Speed   "+str(self.pacman_speed)
+                    self.game_settings[4]="PacMan Lives   "+str(self.pacman_lives)
+                    self.game_settings[5]="Fear Time   "+str(self.fear_time)
+                elif self.choose == "Endless":
+                    self.game_settings[0]="Easy"
+                    self.ghost_number = 2
+                    self.pacman_lives = 5
+                    self.pacman_speed = 5
+                    self.ghost_speed = 2
+                    self.fear_time = 10
+                    self.choose="Easy"
+
+                    self.game_settings[1]="Ghosts number   "+str(self.ghost_number)
+                    self.game_settings[2]="Ghost Speed   "+str(self.ghost_speed)
+                    self.game_settings[3]="PacMan Speed   "+str(self.pacman_speed)
+                    self.game_settings[4]="PacMan Lives   "+str(self.pacman_lives)
+                    self.game_settings[5]="Fear Time   "+str(self.fear_time)
+                elif self.choose == "Easy":
+                    self.game_settings[0]="Normal"
+                    self.fear_time=5
+                    self.ghost_number=4
+                    self.ghost_speed=4
+                    self.pacman_speed=5
+                    self.pacman_lives=3
+                    self.choose="Normal"
+                    self.game_settings[1]="Ghosts number   "+str(self.ghost_number)
+                    self.game_settings[2]="Ghost Speed   "+str(self.ghost_speed)
+                    self.game_settings[3]="PacMan Speed   "+str(self.pacman_speed)
+                    self.game_settings[4]="PacMan Lives   "+str(self.pacman_lives)
+                    self.game_settings[5]="Fear Time   "+str(self.fear_time)
 
             elif key == arcade.key.LEFT:
                 if self.choose[:9] =="Map width":
@@ -489,6 +543,61 @@ class Menu:
                     if self.music_volume<0:
                         self.music_volume=0
                     self.sound_options[1]="Music Volume   "+str(self.music_volume)
+
+                if self.choose == "Endless":
+                    self.game_settings[0]="Hard"
+                    self.ghost_number = 8
+                    self.ghost_speed = 5
+                    self.pacman_speed = 4
+                    self.pacman_lives = 1
+                    self.fear_time = 0
+                    self.choose="Hard"
+                    self.game_settings[1]="Ghosts number   "+str(self.ghost_number)
+                    self.game_settings[2]="Ghost Speed   "+str(self.ghost_speed)
+                    self.game_settings[3]="PacMan Speed   "+str(self.pacman_speed)
+                    self.game_settings[4]="PacMan Lives   "+str(self.pacman_lives)
+                    self.game_settings[5]="Fear Time   "+str(self.fear_time)
+                elif self.choose == "Easy":
+                    self.game_settings[0]="Endless"
+                    self.ghost_number = 0
+                    self.pacman_lives = 10
+                    self.pacman_speed = 7
+                    self.fear_time = 0
+                    self.choose="Endless"
+
+                    self.game_settings[1]="Ghosts number   "+str(self.ghost_number)
+                    self.game_settings[2]="Ghost Speed   "+str(self.ghost_speed)
+                    self.game_settings[3]="PacMan Speed   "+str(self.pacman_speed)
+                    self.game_settings[4]="PacMan Lives   "+str(self.pacman_lives)
+                    self.game_settings[5]="Fear Time   "+str(self.fear_time)
+                elif self.choose == "Normal":
+                    self.game_settings[0]="Easy"
+                    self.ghost_number = 2
+                    self.pacman_lives = 5
+                    self.pacman_speed = 5
+                    self.ghost_speed = 2
+                    self.fear_time = 10
+                    self.choose="Easy"
+
+                    self.game_settings[1]="Ghosts number   "+str(self.ghost_number)
+                    self.game_settings[2]="Ghost Speed   "+str(self.ghost_speed)
+                    self.game_settings[3]="PacMan Speed   "+str(self.pacman_speed)
+                    self.game_settings[4]="PacMan Lives   "+str(self.pacman_lives)
+                    self.game_settings[5]="Fear Time   "+str(self.fear_time)
+                elif self.choose == "Hard":
+                    self.game_settings[0]="Normal"
+                    self.fear_time=5
+                    self.ghost_number=4
+                    self.ghost_speed=4
+                    self.pacman_speed=5
+                    self.pacman_lives=3
+                    self.choose="Normal"
+                    self.game_settings[1]="Ghosts number   "+str(self.ghost_number)
+                    self.game_settings[2]="Ghost Speed   "+str(self.ghost_speed)
+                    self.game_settings[3]="PacMan Speed   "+str(self.pacman_speed)
+                    self.game_settings[4]="PacMan Lives   "+str(self.pacman_lives)
+                    self.game_settings[5]="Fear Time   "+str(self.fear_time)
+
 
             if key == arcade.key.ENTER or key==arcade.key.SPACE:
                 self.changed=False
